@@ -94,5 +94,65 @@ create table AgentWorksOn(
     Constraint AgentWorksOn_FK_1 Foreign Key (username) References GovAgent(username),
     Constraint AgentWorksOn_FK_2 Foreign Key (formID) References WineLabelForm(formID)
 );
-    
-    
+
+--Insert Accounts Data
+Insert into Accounts values('wwong2','cs3431');
+Insert into Accounts values('alexalto','alex123');
+Insert into Accounts values('billburr','bill123');
+Insert into Accounts values('candacecarr','candace123');
+Insert into Accounts values('daviddot','davic123');
+Insert into Accounts values('emmaenglund','emma123');
+Insert into Accounts values('frankfallen','frank123');
+Insert into Accounts values('greggreen','greg123');
+Insert into Accounts values('hannahhart','hannah123');
+Insert into Accounts values('ianippo','ian123');
+Insert into Accounts values('johnjum','john123');
+Insert into Accounts values('karenkarl','karen123');
+Insert into Accounts values('laurieleshin','laurie123');
+Insert into Accounts values('mollymann','molly123');
+Insert into Accounts values('nolannell','nolan123');
+Insert into Accounts values('oprahone','oprah123');
+Insert into Accounts values('percyprang','percy123');
+Insert into Accounts values('quentinquinn','quentin123');
+Insert into Accounts values('robbierotten','robbie123');
+Insert into Accounts values('sammisanderson','sammi123');
+
+--Insert TTB Agents (first into govvAgent, then into s superagent)
+Insert into GovAgent values('alexalto','9785956889','Alex','Alto','alex@supagent.com');
+Insert into SuperAgent values('alexalto',ttbID_seq.nextVal);
+Insert into GovAgent values('billburr','7465856374','Bill','Burr','bill@supagent.com');
+Insert into SuperAgent values('billburr',ttbID_seq.nextVal);
+Insert into GovAgent values('candacecarr','1094758394','Candace','Carr','candace@supagent.com');
+Insert into SuperAgent values('candacecarr',ttbID_seq.nextVal);
+Insert into GovAgent values('daviddot','1238764567','David','Dot','david@supagent.com');
+Insert into SuperAgent values('daviddot',ttbID_seq.nextVal);
+Insert into GovAgent values('emmaenglund','1647485746','Emma','Englund','emma@supagent.com');
+Insert into SuperAgent values('emmaenglund',ttbID_seq.nextVal);
+Insert into GovAgent values('frankfallen','8756473847','Frank','Fallen','frank@supagent.com');
+Insert into SuperAgent values('frankfallen',ttbID_seq.nextVal);
+Insert into GovAgent values('greggreen','2647589374','Greg','Green','greg@supagent.com');
+Insert into SuperAgent values('greggreen',ttbID_seq.nextVal);
+Insert into GovAgent values('hannahhart','2476569475','Hannah','Hart','hannah@supagent.com');
+Insert into SuperAgent values('hannahhart',ttbID_seq.nextVal);
+Insert into GovAgent values('ianippo','6574899371','Ian','Ippo','ian@supagent.com');
+Insert into SuperAgent values('ianippo',ttbID_seq.nextVal);
+Insert into GovAgent values('johnjum','2255667781','John','Jum','john@supagent.com');
+Insert into SuperAgent values('johnjum',ttbID_seq.nextVal);
+
+--Insert WineCompReps
+Insert into WineCompRep values(repID_seq.nextval, 'karen@winerep.com','8765456765','Karen','Karl','Wine Vine','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'laurie@winerep.com','6574859687','Laurie','Leshin','Wine Vine','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'molly@winerep.com','3465784756','Molly','Mann','Wining for Wine','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'nolan@winerep.com','3948596879','Nolan','Nell','Wining for Winr','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'oprah@winerep.com','1039486789','Oprah','One','Wining for Wine','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'percy@winerep.com','1823759395','Percy','Prang','Fine Wines','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'quentin@winerep.com','9875847586','Quentin','Quinn','Fine Wines','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'robbie@winerep.com','3748595867','Robbie','Rotten ','First Wine','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'sammi@winerep.com','3388574839','Sammi','Sanderson','First Wine','karenkarl');
+Insert into WineCompRep values(repID_seq.nextval, 'wwong2@winerep.com','1233489566','Wilson','Wong','First Wine','karenkarl');
+
+select * from WineCompRep;
+
+select * from SuperAgent sa
+    Join GovAgent ga
+    on ga.username = sa.username;
