@@ -60,6 +60,7 @@ create table Wines(
     netContent number(5, 1),
     wine_class varchar(25),
     appellation varchar2(25),
+    year number(4, 0),
     Constraint Wines_PK Primary Key (wineID)
 );
 
@@ -70,7 +71,7 @@ create table WineLabelForm(
     currentReviewerID number,
     dateSubmitted date,
     dateRejected date,
-    dateAccpeted date,
+    dateAccepted date,
     status varchar2(25),
     wineID number,
     vintage number(4, 0),
@@ -78,11 +79,12 @@ create table WineLabelForm(
     repID number,
     dateBegan date,
     comments varchar2(100),
-    year number(4, 0),
     Constraint WineLabelForm_PK Primary Key(formID),
     Constraint WineLabelForm_FK_1 Foreign Key (wineID) References Wines(wineID),
     Constraint WineLabelForm_FK_2 Foreign Key (ttbID) References SuperAgent(ttbID),
-    Constraint WineLabelForm_FK_3 Foreign Key (repID) References WineCompRep(repID)
+    Constraint WineLabelForm_FK_3 Foreign Key (repID) References WineCompRep(repID),
+    Constraint WineLabelFOrm_FK_4 Foreign Key (vintage) References Wine(year),
+    Constraint WineLabelForm_UQ_1 Unique (vintage, wineID)
 );
 
 create Sequence formID_seq start with 100 increment by 1;
@@ -156,3 +158,17 @@ select * from WineCompRep;
 select * from SuperAgent sa
     Join GovAgent ga
     on ga.username = sa.username;
+
+insert into Wines values(wineID_seq.nextVal, 'Chianti Classico DOCG', 14.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'ASKA', 14.0, 'Banfi Tuscany', 750, 'Red', 'Bolgheri');
+insert into Wines values(wineID_seq.nextVal, 'Centine Blanco', 12, 'Banfi Tuscany', 750, 'White', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Centine Rose', 12.5, 'Banfi Tuscany', 750, 'Rose', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Centine Rosso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Chianti Classico Riserva DOCG', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Chianti Superiore', 13.3, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Col Di Sasso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Collepino', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+insert into Wines values(wineID_seq.nextVal, 'Fonte Alla Selva', 13.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Select * From Wines;
+
+    
