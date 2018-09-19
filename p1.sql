@@ -1,9 +1,22 @@
+drop table Accounts cascade constraints;
+drop table GovAgent cascade constraints;
+drop table SuperAgent cascade constraints;
+drop table WineCompRep cascade constraints;
+drop table Wines cascade constraints;
+drop table WineLabelForm cascade constraints;
+drop table AgentWorksOn cascade constraints;
+drop sequence ttbID_seq;
+drop sequence repID_seq;
+drop sequence wineID_seq;
+drop sequence formID_seq;
+
+
 -- tdubuke rscalfani
-create table Account(
+create table Accounts(
     username varchar2(25),
-    password varchar2(25),
-    Constraint Account_PK Primary Key (username)
-    );
+    accPassword varchar2(25),
+    Constraint Accounts_PK Primary Key (username)
+);
     
 create table GovAgent (
     username varchar2(25),
@@ -12,8 +25,8 @@ create table GovAgent (
     lastName varchar2(25),
     email varchar2(50),
     Constraint GovAgent_PK Primary Key (username),
-    Constraint Agent_User_FK Foreign Key (username) references Account(username)
-    );
+    Constraint GovAgent_FK_1 Foreign Key (username) references Accounts(username)
+);
   
 create sequence ttbID_seq start with 100 increment by 1;
 
@@ -36,8 +49,8 @@ create table WineCompRep (
     copmanyName varchar2(25),
     username varchar2(25),
     Constraint WineCompRep_PK Primary Key (repID),
-    Constraint Rep_User_FK Foreign Key (username) references Account(username)
-    );
+    Constraint Rep_User_FK Foreign Key (username) references Accounts(username)
+);
     
 create table Wines(
     wineID number, 
@@ -45,8 +58,9 @@ create table Wines(
     alcContent number(4, 1),
     bottlerName varchar(25),
     netContent number(5, 1),
-    class varchar(25),
-    appellation varhchar(25)
+    wine_class varchar(25),
+    appellation varchar2(25),
+    Constraint Wines_PK Primary Key (wineID)
 );
 
 create Sequence wineID_seq start with 100 increment by 1;
@@ -64,11 +78,11 @@ create table WineLabelForm(
     repID number,
     dateBegan date,
     comments varchar2(100),
-    year number(4, 0)
+    year number(4, 0),
     Constraint WineLabelForm_PK Primary Key(formID),
-    Constraint WineLabelForm_FK_1 Foreign Key (wineID) References (WineCompRep.wineID),
-    Constraint WineLabelForm_FK_2 Foreign Key (ttbID) References (SuperAgent.ttbID),
-    Constraint WineLabelForm_FK_3 Foreign Key (repID) References (WineCompRep.repID)
+    Constraint WineLabelForm_FK_1 Foreign Key (wineID) References Wines(wineID),
+    Constraint WineLabelForm_FK_2 Foreign Key (ttbID) References SuperAgent(ttbID),
+    Constraint WineLabelForm_FK_3 Foreign Key (repID) References WineCompRep(repID)
 );
 
 create Sequence formID_seq start with 100 increment by 1;
@@ -77,8 +91,8 @@ create table AgentWorksOn(
     username varchar2(25),
     formID number,
     Constraint AgentWorksOn_PK Primary Key (username, formID),
-    Constraint AgentWorksOn_FK_1 Foreign Key (username) References (GovAgent.username),
-    Constraint AgentWorksOn_FK_2 Foreign Key (formID) References (WineLabelForm.formID)
+    Constraint AgentWorksOn_FK_1 Foreign Key (username) References GovAgent(username),
+    Constraint AgentWorksOn_FK_2 Foreign Key (formID) References WineLabelForm(formID)
 );
     
     
