@@ -1,17 +1,18 @@
+-- tdubuke rscalfani
+-- Project 1
+
 drop table Accounts cascade constraints;
 drop table GovAgent cascade constraints;
-drop table SuperAgent cascade constraints;
 drop table WineCompRep cascade constraints;
 drop table Wines cascade constraints;
 drop table WineLabelForm cascade constraints;
 drop table AgentWorksOn cascade constraints;
+drop table WineLabelFormTtbID cascade constraints;
 drop sequence ttbID_seq;
 drop sequence repID_seq;
 drop sequence wineID_seq;
 drop sequence formID_seq;
 
-
--- tdubuke rscalfani
 create table Accounts(
     username varchar2(25),
     accPassword varchar2(25),
@@ -19,26 +20,17 @@ create table Accounts(
 );
     
 create table GovAgent (
+    ttbID number,
     username varchar2(25),
     phoneNum varchar2(15),
     firstName varchar2(25),
     lastName varchar2(25),
     email varchar2(50),
-    Constraint GovAgent_PK Primary Key (username),
+    Constraint GovAgent_PK Primary Key (ttbID),
     Constraint GovAgent_FK_1 Foreign Key (username) references Accounts(username)
 );
-  
 create sequence ttbID_seq start with 100 increment by 1;
 
-create table SuperAgent (
-    username varchar2(25),
-    ttbID number,
-    Constraint SuperAgent_PK Primary Key (username),
-    Constraint ttbID_UQ Unique (ttbID),
-    Constraint SuperAgent_User_FK Foreign Key (username) references GovAgent(username)
-);
-
-create sequence repID_seq start with 100 increment by 1;
 
 create table WineCompRep (
     repID number,
@@ -51,19 +43,18 @@ create table WineCompRep (
     Constraint WineCompRep_PK Primary Key (repID),
     Constraint Rep_User_FK Foreign Key (username) references Accounts(username)
 );
+create sequence repID_seq start with 100 increment by 1;
     
 create table Wines(
-    wineID number, 
+    wineID number,
     brand varchar2(25),
     alcContent number(4, 1),
     bottlerName varchar(25),
     netContent number(5, 1),
     wine_class varchar(25),
     appellation varchar2(25),
-    year number(4, 0),
     Constraint Wines_PK Primary Key (wineID)
 );
-
 create Sequence wineID_seq start with 100 increment by 1;
 
 create table WineLabelForm(
@@ -75,26 +66,30 @@ create table WineLabelForm(
     status varchar2(25),
     wineID number,
     vintage number(4, 0),
-    ttbID number,
     repID number,
     dateBegan date,
     comments varchar2(100),
     Constraint WineLabelForm_PK Primary Key(formID),
     Constraint WineLabelForm_FK_1 Foreign Key (wineID) References Wines(wineID),
-    Constraint WineLabelForm_FK_2 Foreign Key (ttbID) References SuperAgent(ttbID),
+    Constraint WineLabelForm_FK_2 Foreign Key (currentReviewerID) References GovAgent(ttbID),
     Constraint WineLabelForm_FK_3 Foreign Key (repID) References WineCompRep(repID),
-    Constraint WineLabelFOrm_FK_4 Foreign Key (vintage) References Wine(year),
     Constraint WineLabelForm_UQ_1 Unique (vintage, wineID)
 );
-
 create Sequence formID_seq start with 100 increment by 1;
 
 create table AgentWorksOn(
-    username varchar2(25),
+    ttbID number,
     formID number,
-    Constraint AgentWorksOn_PK Primary Key (username, formID),
-    Constraint AgentWorksOn_FK_1 Foreign Key (username) References GovAgent(username),
+    Constraint AgentWorksOn_PK Primary Key (ttbID, formID),
+    Constraint AgentWorksOn_FK_1 Foreign Key (ttbID) References GovAgent(ttbID),
     Constraint AgentWorksOn_FK_2 Foreign Key (formID) References WineLabelForm(formID)
+);
+
+create table WineLabelFormTtbID(
+    formID number,
+    ttbID number,
+    Constraint WineLabelFormTtbID_PK Primary Key (formID, ttbID),
+    Constraint WineLabelFormTtbID_FK Foreign Key (formID) References WineLabelForm(formID)
 );
 
 --Insert Accounts Data
@@ -119,27 +114,21 @@ Insert into Accounts values('quentinquinn','quentin123');
 Insert into Accounts values('robbierotten','robbie123');
 Insert into Accounts values('sammisanderson','sammi123');
 
+Select * From Accounts;
+
 --Insert TTB Agents (first into govvAgent, then into s superagent)
-Insert into GovAgent values('alexalto','9785956889','Alex','Alto','alex@supagent.com');
-Insert into SuperAgent values('alexalto',ttbID_seq.nextVal);
-Insert into GovAgent values('billburr','7465856374','Bill','Burr','bill@supagent.com');
-Insert into SuperAgent values('billburr',ttbID_seq.nextVal);
-Insert into GovAgent values('candacecarr','1094758394','Candace','Carr','candace@supagent.com');
-Insert into SuperAgent values('candacecarr',ttbID_seq.nextVal);
-Insert into GovAgent values('daviddot','1238764567','David','Dot','david@supagent.com');
-Insert into SuperAgent values('daviddot',ttbID_seq.nextVal);
-Insert into GovAgent values('emmaenglund','1647485746','Emma','Englund','emma@supagent.com');
-Insert into SuperAgent values('emmaenglund',ttbID_seq.nextVal);
-Insert into GovAgent values('frankfallen','8756473847','Frank','Fallen','frank@supagent.com');
-Insert into SuperAgent values('frankfallen',ttbID_seq.nextVal);
-Insert into GovAgent values('greggreen','2647589374','Greg','Green','greg@supagent.com');
-Insert into SuperAgent values('greggreen',ttbID_seq.nextVal);
-Insert into GovAgent values('hannahhart','2476569475','Hannah','Hart','hannah@supagent.com');
-Insert into SuperAgent values('hannahhart',ttbID_seq.nextVal);
-Insert into GovAgent values('ianippo','6574899371','Ian','Ippo','ian@supagent.com');
-Insert into SuperAgent values('ianippo',ttbID_seq.nextVal);
-Insert into GovAgent values('johnjum','2255667781','John','Jum','john@supagent.com');
-Insert into SuperAgent values('johnjum',ttbID_seq.nextVal);
+Insert into GovAgent values(ttbID_seq.nextVal, 'alexalto','9785956889','Alex','Alto','alex@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'billburr','7465856374','Bill','Burr','bill@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'candacecarr','1094758394','Candace','Carr','candace@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'daviddot','1238764567','David','Dot','david@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'emmaenglund','1647485746','Emma','Englund','emma@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'frankfallen','8756473847','Frank','Fallen','frank@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'greggreen','2647589374','Greg','Green','greg@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'hannahhart','2476569475','Hannah','Hart','hannah@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'ianippo','6574899371','Ian','Ippo','ian@supagent.com');
+Insert into GovAgent values(ttbID_seq.nextVal, 'johnjum','2255667781','John','Jum','john@supagent.com');
+
+select * from GovAgent;
 
 --Insert WineCompReps
 Insert into WineCompRep values(repID_seq.nextval, 'karen@winerep.com','8765456765','Karen','Karl','Wine Vine','karenkarl');
@@ -155,20 +144,40 @@ Insert into WineCompRep values(repID_seq.nextval, 'wwong2@winerep.com','12334895
 
 select * from WineCompRep;
 
-select * from SuperAgent sa
-    Join GovAgent ga
-    on ga.username = sa.username;
+--Insert Wines
+Insert into Wines values(wineID_seq.nextVal, 'Chianti Classico DOCG', 14.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'ASKA', 14.0, 'Banfi Tuscany', 750, 'Red', 'Bolgheri');
+Insert into Wines values(wineID_seq.nextVal, 'Centine Bianco', 12, 'Banfi Tuscany', 750, 'White', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Centine Rose', 12.5, 'Banfi Tuscany', 750, 'Rose', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Centine Rosso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Chianti Classico Riserva', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Chianti Superiore', 13.3, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Col Di Sasso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Collepino', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+Insert into Wines values(wineID_seq.nextVal, 'Fonte Alla Selva', 13.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
 
-insert into Wines values(wineID_seq.nextVal, 'Chianti Classico DOCG', 14.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'ASKA', 14.0, 'Banfi Tuscany', 750, 'Red', 'Bolgheri');
-insert into Wines values(wineID_seq.nextVal, 'Centine Blanco', 12, 'Banfi Tuscany', 750, 'White', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Centine Rose', 12.5, 'Banfi Tuscany', 750, 'Rose', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Centine Rosso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Chianti Classico Riserva DOCG', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Chianti Superiore', 13.3, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Col Di Sasso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Collepino', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
-insert into Wines values(wineID_seq.nextVal, 'Fonte Alla Selva', 13.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
 Select * From Wines;
 
-    
+--Insert WineLabelForm
+Insert into WineLabelForm values(formID_seq.nextval, 100, '27-APR-17', null, null, 'Under Review', 109, 2015, 100, '05-SEP-18', 'Tasty');
+Insert into WineLabelForm values(formID_seq.nextval, 101, '26-APR-17', null, null, 'Under Review', 108, 2015, 102, '04-SEP-18', 'Delightful');
+Insert into WineLabelForm values(formID_seq.nextval, 102, '25-APR-17', null, null, 'Under Review', 107, 2015, 101, '03-SEP-18', 'Fragrant');
+Insert into WineLabelForm values(formID_seq.nextval, 103, '24-APR-17', null, null, 'Under Review', 106, 2015, 104, '02-SEP-18', 'Wonderful');
+Insert into WineLabelForm values(formID_seq.nextval, 104, '23-APR-17', '24-AUG-17', null, 'Failed', 105, 2015, 103, '01-SEP-18', 'Nasty');
+Insert into WineLabelForm values(formID_seq.nextval, 105, '22-APR-17', null, '24-AUG-17', 'Passed', 104, 2015, 106, '29-SEP-18', 'Delicious');
+Insert into WineLabelForm values(formID_seq.nextval, 106, '21-APR-17', null, null, 'Under Review', 103, 2015, 105, '28-SEP-18', 'Elixir');
+Insert into WineLabelForm values(formID_seq.nextval, 107, '20-APR-17', null, null, 'Under Review', 102, 2015, 108, '27-SEP-18', 'Oaky');
+Insert into WineLabelForm values(formID_seq.nextval, 108, '19-APR-17', null, null, 'Under Review', 101, 2015, 107, '26-SEP-18', 'Should have been accepted years ago');
+Insert into WineLabelForm values(formID_seq.nextval, 109, '18-APR-17', null, null, 'Under Review', 100, 2015, 100, '25-SEP-18', '12/10');
+Insert into WineLabelForm values(formID_seq.nextval, 100, '17-APR-17', null, null, 'Under Review', 109, 2014, 102, '24-SEP-18', 'Tasty');
+Insert into WineLabelForm values(formID_seq.nextval, 101, '16-APR-17', '20-APR-18', null, 'Failed', 108, 2014, 101, '23-SEP-18', 'Ewwwww');
+Insert into WineLabelForm values(formID_seq.nextval, 102, '15-APR-17', null, null, 'Under Review', 107, 2014, 104, '22-SEP-18', 'Yikes');
+Insert into WineLabelForm values(formID_seq.nextval, 103, '14-APR-17', null, null, 'Under Review', 106, 2014, 103, '21-SEP-18', 'Nope');
+Insert into WineLabelForm values(formID_seq.nextval, 104, '13-APR-17', null, null, 'Under Review', 105, 2014, 106, '20-SEP-18', 'Heck Nope');
+Insert into WineLabelForm values(formID_seq.nextval, 105, '12-APR-17', null, null, 'Under Review', 104, 2014, 105, '19-SEP-18', 'Double Heck Nope');
+Insert into WineLabelForm values(formID_seq.nextval, 106, '11-APR-17', null, null, 'Under Review', 103, 2014, 108, '18-SEP-18', 'Awww Heck Nope');
+Insert into WineLabelForm values(formID_seq.nextval, 107, '10-APR-17', null, null, 'Under Review', 102, 2014, 107, '17-SEP-18', 'Can I curse?');
+Insert into WineLabelForm values(formID_seq.nextval, 108, '09-APR-17', null, null, 'Under Review', 101, 2014, 109, '16-SEP-18', 'Better Not');
+Insert into WineLabelForm values(formID_seq.nextval, 109, '08-APR-17', null, null, 'Under Review', 100, 2014, 100, '15-SEP-18', 'Good Plan');
+
+Select * From WineLabelForm;
