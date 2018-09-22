@@ -6,7 +6,6 @@ drop table GovAgent cascade constraints;
 drop table WineCompRep cascade constraints;
 drop table Wines cascade constraints;
 drop table WineLabelForm cascade constraints;
-drop table AgentWorksOn cascade constraints;
 drop table WineLabelFormTtbID cascade constraints;
 drop sequence ttbID_seq;
 drop sequence repID_seq;
@@ -67,8 +66,6 @@ create table WineLabelForm(
     wineID number,
     vintage number(4, 0),
     repID number,
-    dateBegan date,
-    comments varchar2(100),
     Constraint WineLabelForm_PK Primary Key(formID),
     Constraint WineLabelForm_FK_1 Foreign Key (wineID) References Wines(wineID),
     Constraint WineLabelForm_FK_2 Foreign Key (currentReviewerID) References GovAgent(ttbID),
@@ -77,19 +74,14 @@ create table WineLabelForm(
 );
 create Sequence formID_seq start with 100 increment by 1;
 
-create table AgentWorksOn(
-    ttbID number,
-    formID number,
-    Constraint AgentWorksOn_PK Primary Key (ttbID, formID),
-    Constraint AgentWorksOn_FK_1 Foreign Key (ttbID) References GovAgent(ttbID),
-    Constraint AgentWorksOn_FK_2 Foreign Key (formID) References WineLabelForm(formID)
-);
-
 create table WineLabelFormTtbID(
     formID number,
     ttbID number,
+    dateBegan date,
+    comments varchar2(100),
     Constraint WineLabelFormTtbID_PK Primary Key (formID, ttbID),
-    Constraint WineLabelFormTtbID_FK Foreign Key (formID) References WineLabelForm(formID)
+    Constraint WineLabelFormForm_FK Foreign Key (formID) References WineLabelForm(formID),
+    Constraint WineLabelFormTtbID_FK Foreign Key (ttbID) References GovAgent(ttbID)
 );
 
 --Insert Accounts Data
@@ -116,7 +108,7 @@ Insert into Accounts values('sammisanderson','sammi123');
 
 Select * From Accounts;
 
---Insert TTB Agents (first into govvAgent, then into s superagent)
+--Insert GovAgent
 Insert into GovAgent values(ttbID_seq.nextVal, 'alexalto','9785956889','Alex','Alto','alex@supagent.com');
 Insert into GovAgent values(ttbID_seq.nextVal, 'billburr','7465856374','Bill','Burr','bill@supagent.com');
 Insert into GovAgent values(ttbID_seq.nextVal, 'candacecarr','1094758394','Candace','Carr','candace@supagent.com');
@@ -159,25 +151,53 @@ Insert into Wines values(wineID_seq.nextVal, 'Fonte Alla Selva', 13.5, 'Banfi Tu
 Select * From Wines;
 
 --Insert WineLabelForm
-Insert into WineLabelForm values(formID_seq.nextval, 100, '27-APR-17', null, null, 'Under Review', 109, 2015, 100, '05-SEP-18', 'Tasty');
-Insert into WineLabelForm values(formID_seq.nextval, 101, '26-APR-17', null, null, 'Under Review', 108, 2015, 102, '04-SEP-18', 'Delightful');
-Insert into WineLabelForm values(formID_seq.nextval, 102, '25-APR-17', null, null, 'Under Review', 107, 2015, 101, '03-SEP-18', 'Fragrant');
-Insert into WineLabelForm values(formID_seq.nextval, 103, '24-APR-17', null, null, 'Under Review', 106, 2015, 104, '02-SEP-18', 'Wonderful');
-Insert into WineLabelForm values(formID_seq.nextval, 104, '23-APR-17', '24-AUG-17', null, 'Failed', 105, 2015, 103, '01-SEP-18', 'Nasty');
-Insert into WineLabelForm values(formID_seq.nextval, 105, '22-APR-17', null, '24-AUG-17', 'Passed', 104, 2015, 106, '29-SEP-18', 'Delicious');
-Insert into WineLabelForm values(formID_seq.nextval, 106, '21-APR-17', null, null, 'Under Review', 103, 2015, 105, '28-SEP-18', 'Elixir');
-Insert into WineLabelForm values(formID_seq.nextval, 107, '20-APR-17', null, null, 'Under Review', 102, 2015, 108, '27-SEP-18', 'Oaky');
-Insert into WineLabelForm values(formID_seq.nextval, 108, '19-APR-17', null, null, 'Under Review', 101, 2015, 107, '26-SEP-18', 'Should have been accepted years ago');
-Insert into WineLabelForm values(formID_seq.nextval, 109, '18-APR-17', null, null, 'Under Review', 100, 2015, 100, '25-SEP-18', '12/10');
-Insert into WineLabelForm values(formID_seq.nextval, 100, '17-APR-17', null, null, 'Under Review', 109, 2014, 102, '24-SEP-18', 'Tasty');
-Insert into WineLabelForm values(formID_seq.nextval, 101, '16-APR-17', '20-APR-18', null, 'Failed', 108, 2014, 101, '23-SEP-18', 'Ewwwww');
-Insert into WineLabelForm values(formID_seq.nextval, 102, '15-APR-17', null, null, 'Under Review', 107, 2014, 104, '22-SEP-18', 'Yikes');
-Insert into WineLabelForm values(formID_seq.nextval, 103, '14-APR-17', null, null, 'Under Review', 106, 2014, 103, '21-SEP-18', 'Nope');
-Insert into WineLabelForm values(formID_seq.nextval, 104, '13-APR-17', null, null, 'Under Review', 105, 2014, 106, '20-SEP-18', 'Heck Nope');
-Insert into WineLabelForm values(formID_seq.nextval, 105, '12-APR-17', null, null, 'Under Review', 104, 2014, 105, '19-SEP-18', 'Double Heck Nope');
-Insert into WineLabelForm values(formID_seq.nextval, 106, '11-APR-17', null, null, 'Under Review', 103, 2014, 108, '18-SEP-18', 'Awww Heck Nope');
-Insert into WineLabelForm values(formID_seq.nextval, 107, '10-APR-17', null, null, 'Under Review', 102, 2014, 107, '17-SEP-18', 'Can I curse?');
-Insert into WineLabelForm values(formID_seq.nextval, 108, '09-APR-17', null, null, 'Under Review', 101, 2014, 109, '16-SEP-18', 'Better Not');
-Insert into WineLabelForm values(formID_seq.nextval, 109, '08-APR-17', null, null, 'Under Review', 100, 2014, 100, '15-SEP-18', 'Good Plan');
+Insert into WineLabelForm values(formID_seq.nextval, 100, '27-APR-17', null, null, 'Under Review', 109, 2015, 100);
+Insert into WineLabelForm values(formID_seq.nextval, 101, '26-APR-17', null, null, 'Under Review', 108, 2015, 102);
+Insert into WineLabelForm values(formID_seq.nextval, 102, '25-APR-17', null, null, 'Under Review', 107, 2015, 101);
+Insert into WineLabelForm values(formID_seq.nextval, 103, '24-APR-17', null, null, 'Under Review', 106, 2015, 104);
+Insert into WineLabelForm values(formID_seq.nextval, 104, '23-APR-17', '24-AUG-17', null, 'Failed', 105, 2015, 103);
+Insert into WineLabelForm values(formID_seq.nextval, 105, '22-APR-17', null, '24-AUG-17', 'Passed', 104, 2015, 106);
+Insert into WineLabelForm values(formID_seq.nextval, 106, '21-APR-17', null, null, 'Under Review', 103, 2015, 105);
+Insert into WineLabelForm values(formID_seq.nextval, 107, '20-APR-17', null, null, 'Under Review', 102, 2015, 108);
+Insert into WineLabelForm values(formID_seq.nextval, 108, '19-APR-17', null, null, 'Under Review', 101, 2015, 107);
+Insert into WineLabelForm values(formID_seq.nextval, 109, '18-APR-17', null, null, 'Under Review', 100, 2015, 100);
+Insert into WineLabelForm values(formID_seq.nextval, 100, '17-APR-17', null, null, 'Under Review', 109, 2014, 102);
+Insert into WineLabelForm values(formID_seq.nextval, 101, '16-APR-17', '20-APR-18', null, 'Failed', 108, 2014, 101);
+Insert into WineLabelForm values(formID_seq.nextval, 102, '15-APR-17', null, null, 'Under Review', 107, 2014, 104);
+Insert into WineLabelForm values(formID_seq.nextval, 103, '14-APR-17', null, null, 'Under Review', 106, 2014, 103);
+Insert into WineLabelForm values(formID_seq.nextval, 104, '13-APR-17', null, null, 'Under Review', 105, 2014, 106);
+Insert into WineLabelForm values(formID_seq.nextval, 105, '12-APR-17', null, null, 'Under Review', 104, 2014, 105);
+Insert into WineLabelForm values(formID_seq.nextval, 106, '11-APR-17', null, null, 'Under Review', 103, 2014, 108);
+Insert into WineLabelForm values(formID_seq.nextval, 107, '10-APR-17', null, null, 'Under Review', 102, 2014, 107);
+Insert into WineLabelForm values(formID_seq.nextval, 108, '09-APR-17', null, null, 'Under Review', 101, 2014, 109);
+Insert into WineLabelForm values(formID_seq.nextval, 109, '08-APR-17', null, null, 'Under Review', 100, 2014, 100);
 
 Select * From WineLabelForm;
+
+-- Insert WineLabelFormTtbID
+Insert into WineLabelFormTtbID values (100, 100, '05-SEP-18', 'Tasty');
+Insert into WineLabelFormTtbID values (100, 101, '04-SEP-18', 'Tasty');
+Insert into WineLabelFormTtbID values (101, 101, '04-SEP-18', 'Delightful');
+Insert into WineLabelFormTtbID values (101, 102, '03-SEP-18', 'Delightful');
+Insert into WineLabelFormTtbID values (102, 102, '03-SEP-18', 'Fragrant');
+Insert into WineLabelFormTtbID values (102, 103, '02-SEP-18', 'Fragrant');
+Insert into WineLabelFormTtbID values (103, 103, '02-SEP-18', 'Wonderful');
+Insert into WineLabelFormTtbID values (103, 104, '01-SEP-18', 'Wonderful');
+Insert into WineLabelFormTtbID values (104, 104, '01-SEP-18', 'Nasty');
+Insert into WineLabelFormTtbID values (105, 105, '29-SEP-18', 'Delicious');
+Insert into WineLabelFormTtbID values (106, 106, '05-SEP-18', 'Tasty');
+Insert into WineLabelFormTtbID values (107, 107, '05-SEP-18', 'Tasty');
+Insert into WineLabelFormTtbID values (108, 108, '04-SEP-18', 'Delightful');
+Insert into WineLabelFormTtbID values (109, 109, '03-SEP-18', 'Fragrant');
+Insert into WineLabelFormTtbID values (110, 100, '02-SEP-18', 'Wonderful');
+Insert into WineLabelFormTtbID values (111, 101, '01-SEP-18', 'Nasty');
+Insert into WineLabelFormTtbID values (112, 102, '29-SEP-18', 'Delicious');
+Insert into WineLabelFormTtbID values (113, 103, '05-SEP-18', 'Tasty');
+Insert into WineLabelFormTtbID values (114, 104, '05-SEP-18', 'Tasty');
+Insert into WineLabelFormTtbID values (115, 105, '04-SEP-18', 'Delightful');
+Insert into WineLabelFormTtbID values (116, 106, '03-SEP-18', 'Fragrant');
+Insert into WineLabelFormTtbID values (117, 107, '02-SEP-18', 'Wonderful');
+Insert into WineLabelFormTtbID values (118, 108, '01-SEP-18', 'Nasty');
+Insert into WineLabelFormTtbID values (119, 109, '29-SEP-18', 'Delicious');
+
+Select * From WineLabelFormTtbID;
