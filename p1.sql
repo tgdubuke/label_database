@@ -141,6 +141,10 @@ Insert into SuperAgent values('ianippo',ttbID_seq.nextVal);
 Insert into GovAgent values('johnjum','2255667781','John','Jum','john@supagent.com');
 Insert into SuperAgent values('johnjum',ttbID_seq.nextVal);
 
+select * from SuperAgent sa
+    Join GovAgent ga
+    on ga.username = sa.username;
+
 --Insert WineCompReps
 Insert into WineCompRep values(repID_seq.nextval, 'karen@winerep.com','8765456765','Karen','Karl','Wine Vine','karenkarl');
 Insert into WineCompRep values(repID_seq.nextval, 'laurie@winerep.com','6574859687','Laurie','Leshin','Wine Vine','karenkarl');
@@ -155,10 +159,7 @@ Insert into WineCompRep values(repID_seq.nextval, 'wwong2@winerep.com','12334895
 
 select * from WineCompRep;
 
-select * from SuperAgent sa
-    Join GovAgent ga
-    on ga.username = sa.username;
-
+-- Insert into Wines
 insert into Wines values(wineID_seq.nextVal, 'Chianti Classico DOCG', 14.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
 insert into Wines values(wineID_seq.nextVal, 'ASKA', 14.0, 'Banfi Tuscany', 750, 'Red', 'Bolgheri');
 insert into Wines values(wineID_seq.nextVal, 'Centine Blanco', 12, 'Banfi Tuscany', 750, 'White', 'Tuscany');
@@ -169,6 +170,7 @@ insert into Wines values(wineID_seq.nextVal, 'Chianti Superiore', 13.3, 'Banfi T
 insert into Wines values(wineID_seq.nextVal, 'Col Di Sasso', 12.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
 insert into Wines values(wineID_seq.nextVal, 'Collepino', 13, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
 insert into Wines values(wineID_seq.nextVal, 'Fonte Alla Selva', 13.5, 'Banfi Tuscany', 750, 'Red', 'Tuscany');
+
 Select * From Wines;
 
     
