@@ -352,3 +352,129 @@ INSERT INTO Process
 VALUES (105, 119, '01-Sep-18', 'looking up contact information for company rep');
 
 select * from Process;
+
+create view ClassTypeStats as
+    Select classType, count(dateSubmitted) as Submitted, count(dateRejected) as Rejected, count(dateApproved) as Approved
+    From Wines join Forms on Forms.wineID = Wines.wineID
+    Group by classType;
+    
+Select * From ClassTypeStats;
+    
+create view RemainingCForms as
+    Select classType, (Submitted - (Rejected + Approved)) as Remaining 
+    From ClassTypeStats
+    Where classType Like 'C%' or classType Like 'c%'
+    Order by classType;
+
+Select * From RemainingCForms;
+
+create procedure FormsByAgent (agentsName IN VARCHAR2)
+IS output varchar2(512);
+BEGIN
+    Select 'Agent ' || name || ': ' || count(formID) as num
+    into output
+    From Process p join Agents a
+            on p.ttbID = a.ttbID
+            join Accounts acc
+                on a.loginName = acc.loginName
+    Where name = FormsByAgent.agentsName
+    Group by name;
+    DBMS_OUTPUT.PUT_LINE(output); 
+EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE ('Agent ' || agentsName || ': ' || 0);
+END;
+/
+
+-- Number 3 Project 2
+create or replace trigger InsertErrorDates
+before insert on Forms
+for each row
+begin
+    if(:new.dateRejected < :new.dateSubmitted) Then
+        raise_application_error(-20001, 'Date Rejected cannot be before date submitted');
+    end if;
+    
+    if(:new.dateApproved < :new.dateSubmitted) Then
+        raise_application_error(-20002, 'Date Approved cannot be before date submitted');
+    end if;
+        
+    if(:new.dateRejected is not null and :new.dateApproved is not null) Then
+        raise_application_error(-20003, 'Cannot have a date accepted and rejected');
+    end if;
+end;
+/
+
+-- Number 4 Project 2
+create or replace trigger ExistingErrorDates
+before insert on Forms
+for each row
+declare
+    cursor specForm is
+        Select dateSubmitted, dateRejected, dateApproved
+        From Forms;
+begin
+    for formRow in specForm Loop
+        if(formRow.dateRejected < formRow.dateSubmitted) Then
+            raise_application_error(-20001, 'Date Rejected cannot be before date submitted');
+        end if;
+        
+        if(formRow.dateApproved < formRow.dateSubmitted) Then
+            raise_application_error(-20002, 'Date Approved cannot be before date submitted');
+        end if;
+            
+        if(formRow.dateRejected is not null and formRow.dateApproved is not null) Then
+            raise_application_error(-20003, 'Cannot have a date accepted and rejected');
+        end if;
+    end loop;
+end;
+/
+
+-- Number 5 Project 2
+create or replace trigger MoreThanFive
+after insert or update on Forms
+declare cnt number(5);
+begin
+    select count(*) into cnt 
+    From 
+        (select ttbID, count(formID)
+        from Agents a Join Forms f
+            on a.ttbID = f.currentReviewerID
+        group by ttbID
+        having count(formID) > 5);
+    
+    if cnt > 0 then
+        raise_application_error(-20004, 'Agent is Currently Reviewing more than 5 Wine Forms');
+    end if;
+    DBMS_OUTPUT.PUT_LINE(cnt); 
+end;
+/
+
+-- Number 6 Project 2
+create or replace trigger ChangeStatus
+after insert on Forms
+declare
+    cursor specForm is
+        Select status, dateRejected, dateApproved, formID
+        From Forms;
+begin
+    for formRow in specForm Loop
+        if(formRow.dateRejected is not null) Then
+            update Forms
+            set status = 'Rejected'
+            where formRow.formID = Forms.formID;
+        end if;
+         if(formRow.datApproved is not null) Then
+            update Forms
+            set status = 'Approved'
+            where formRow.formID = Forms.formID;
+        end if;
+    end loop;
+end;
+/
+
+INSERT INTO Forms VALUES (formID_seq.nextval,'working',1964,'16-Mar-17', '20-Feb-18', NULL,109,100,103);
+
+select * from Forms;
+
+   
